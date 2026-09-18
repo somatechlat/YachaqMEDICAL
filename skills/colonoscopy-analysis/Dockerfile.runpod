@@ -1,0 +1,29 @@
+# Dockerfile for RunPod Serverless MedGemma Endpoint
+# Uses vLLM for high-performance inference with OpenAI-compatible API
+#
+# Build: docker build -t medgemma-runpod -f Dockerfile.runpod .
+# Test locally: docker run --gpus all -p 8000:8000 medgemma-runpod
+
+FROM runpod/vllm-openai:latest
+
+# Model configuration
+ENV MODEL_NAME="google/medgemma-1.5-4b-it"
+ENV MAX_MODEL_LEN="4096"
+ENV GPU_MEMORY_UTILIZATION="0.9"
+ENV DTYPE="auto"
+ENV TRUST_REMOTE_CODE="true"
+ENV MAX_NUM_SEQS="4"
+
+# Hugging Face token for model download
+# Set at runtime: docker run -e HF_TOKEN=your_token ...
+# ENV HF_TOKEN=""
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
+  CMD curl -f http://localhost:8000/health || exit 1
+
+# Expose port
+EXPOSE 8000
+
+# RunPod handler
+CMD ["--model", "$MODEL_NAME", "--max-model-len", "$MAX_MODEL_LEN", "--gpu-memory-utilization", "$GPU_MEMORY_UTILIZATION", "--dtype", "$DTYPE", "--trust-remote-code", "--max-num-seqs", "$MAX_NUM_SEQS"]
