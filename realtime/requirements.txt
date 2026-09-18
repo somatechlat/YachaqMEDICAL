@@ -1,0 +1,23 @@
+# YachaqMEDICAL — Dependencies
+
+# Core
+ultralytics>=8.2.0        # YOLOv8 for real-time detection
+opencv-python>=4.8.0       # Video processing
+numpy>=1.24.0
+
+# MedGemma Integration
+aiohttp>=3.9.0             # Async HTTP client for RunPod API
+aiofiles>=23.0.0           # Async file operations
+
+# Dataset & Training
+datasets>=2.14.0           # HuggingFace datasets (for Kvasir download)
+scikit-learn>=1.3.0        # Train/test split
+Pillow>=10.0.0             # Image processing
+
+# Web Viewer (optional)
+# aiohttp already included above
+
+# Agent Zero integration (if using as tools)
+# These are already part of Agent Zero's requirements
+# langchain-core
+# pydantic

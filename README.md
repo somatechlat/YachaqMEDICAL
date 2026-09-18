@@ -19,6 +19,32 @@ An AI agent that analyzes medical images (colonoscopy, endoscopy, histopathology
 | **Histopathology** | Tissue sample analysis support |
 | **Clinical Reports** | Structured reports in Spanish (ASGE standards) |
 
+## Real-Time System (NEW)
+
+Analyze colonoscopy video **LIVE during the procedure**.
+
+```bash
+# Install dependencies
+pip install -r realtime/requirements.txt
+
+# Train YOLO on Kvasir-SEG dataset (one-time)
+python realtime/train_yolo.py --epochs 50
+
+# Run real-time detection from endoscope stream
+python realtime/run_realtime.py --source rtsp://192.168.1.100/stream --medgemma
+
+# Or from webcam for testing
+python realtime/run_realtime.py --source 0
+
+# With remote web viewer (for other doctors to watch)
+python realtime/run_realtime.py --source 0 --web-viewer --port 8080
+```
+
+**Architecture:**
+- **Tier 1 (YOLOv8):** Real-time polyp detection at 45+ FPS, <25ms latency
+- **Tier 2 (MedGemma):** Detailed classification triggered on detection (Paris/Kudo/NICE)
+- **Web Viewer:** Remote monitoring via browser (MJPEG stream)
+
 ## Quick Start
 
 ### 1. Deploy MedGemma on RunPod
@@ -66,19 +92,25 @@ python analyze_endoscopy.py \
 
 ```
 YachaqMEDICAL/
-├── agents/medical-imaging/          # Agent profile
-│   ├── agent.yaml                   # Profile config
-│   └── prompts/                     # System prompts (role, tools, communication)
-├── tools/                           # Custom Agent Zero tools
-│   ├── medical_image_analyze.py     # MedGemma inference via RunPod
-│   └── medical_report_generate.py   # Clinical report generator
-├── skills/colonoscopy-analysis/     # Workflow skill
-│   ├── SKILL.md                     # Usage guide
-│   ├── Dockerfile.runpod            # RunPod deployment
-│   └── scripts/                     # Standalone scripts
-├── docs/                            # Documentation
-│   └── agent-zero-medical-imaging-report.md
-├── .env.example                     # Environment template
+├── realtime/                              # 🔴 REAL-TIME SYSTEM
+│   ├── detector.py                        # Two-tier detection engine (YOLO + MedGemma)
+│   ├── train_yolo.py                      # Train YOLO on Kvasir-SEG dataset
+│   ├── run_realtime.py                    # Main entry point for live detection
+│   └── requirements.txt                   # Dependencies
+├── agents/medical-imaging/                # Agent Zero integration
+│   ├── agent.yaml
+│   └── prompts/
+├── tools/                                 # Agent Zero tools
+│   ├── medical_image_analyze.py           # MedGemma inference
+│   └── medical_report_generate.py         # Clinical reports
+├── skills/colonoscopy-analysis/           # Workflow skill
+│   ├── SKILL.md
+│   ├── Dockerfile.runpod
+│   └── scripts/
+├── docs/                                  # Documentation
+│   ├── agent-zero-medical-imaging-report.md
+│   └── COST-AND-BENCHMARKS.md
+├── .env.example
 └── README.md
 ```
 
